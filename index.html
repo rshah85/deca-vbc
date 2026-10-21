@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DECA VBC: Entrepreneurship Track</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:13px;background:#0a1020;color:#d0d0d0;display:flex;flex-direction:column}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* BRAND HEADER */
+#brandHeader{background:linear-gradient(90deg,#0a1628,#1a3a5c,#0a1628);height:46px;display:flex;align-items:center;padding:0 14px;border-bottom:2px solid #00c896;flex-shrink:0;gap:10px}
+.lessonDisplayName{font-size:16px;font-weight:700;color:#00e5b5;letter-spacing:.5px}
+.brand-right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px;color:#6090b0}
+#grade-display{color:#ffd700;font-weight:bold;font-size:13px}
+#phase-display{color:#8aabcc;font-size:12px}
+
+/* MENU BAR */
+#menu-bar{background:#16213e;height:42px;display:flex;align-items:center;padding:0 6px;gap:5px;border-bottom:1px solid #2a3a5e;flex-shrink:0;position:relative;z-index:200}
+.menu-bar-button{background:#0e2a45;color:#c0d4e8;border:1px solid #2a4a6e;padding:4px 10px;cursor:pointer;border-radius:4px;display:flex;align-items:center;gap:5px;font-size:13px;height:30px;transition:all .15s;white-space:nowrap}
+.menu-bar-button:hover{background:#1a4060;border-color:#00c896;color:#fff}
+.menu-bar-button.running{background:#0a2a1a;border-color:#00c896;color:#00e5b5}
+.speed-container{display:flex;align-items:center;gap:5px;padding:0 8px;border-left:1px solid #2a3a5e;border-right:1px solid #2a3a5e}
+.speed-container label{color:#7a9ab0;font-size:11px;white-space:nowrap}
+#speed-slider{width:70px;accent-color:#00c896}
+#speed-value{color:#00e5b5;font-weight:bold;min-width:18px;font-size:12px}
+#time-container{padding:0 8px;border-right:1px solid #2a3a5e}
+#time-value{color:#ffd700;font-weight:bold;font-size:12px;white-space:nowrap}
+.menu-container{display:flex;gap:2px;align-items:center}
+.dropdown{position:relative}
+.dropdown-toggle{background:#0e2a45;color:#c0d4e8;border:1px solid #2a4a6e;padding:4px 9px;cursor:pointer;border-radius:4px;font-size:13px;height:30px;display:flex;align-items:center;gap:4px;white-space:nowrap;transition:all .15s}
+.dropdown-toggle:hover,.dropdown.open .dropdown-toggle{background:#1a4060;border-color:#00c896;color:#fff}
+.dropdown-menu{position:absolute;top:calc(100% + 3px);left:0;background:#0d1e35;border:1px solid #2a4a7e;border-radius:4px;min-width:210px;z-index:1000;display:none;list-style:none;box-shadow:0 6px 24px rgba(0,0,0,.7);max-height:380px;overflow-y:auto}
+.dropdown.open .dropdown-menu{display:block}
+.dropdown-menu li a{display:block;padding:7px 14px;color:#c0d4e8;text-decoration:none;font-size:13px;cursor:pointer}
+.dropdown-menu li a:hover{background:#1a4060;color:#00e5b5}
+.dropdown-menu .divider{height:1px;background:#2a3a5e;margin:3px 0}
+.dropdown-menu li.disabled a{color:#3a5070;cursor:default;pointer-events:none}
+
+/* SIM VIEW */
+#sim-view{flex:1;background:#06080f;position:relative;overflow:hidden;min-height:0}
+#sim-view-container{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+#sim-view-canvas{display:block;cursor:default}
+#sim-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.hint-title{font-size:22px;color:#1a3a60;font-weight:700;margin-bottom:8px}
+.hint-sub{font-size:13px;color:#1a3060;margin-bottom:12px}
+.hint-steps{text-align:left;display:inline-block}
+.hint-step{font-size:12px;color:#1a3050;padding:2px 0}
+
+/* CONTROLS BAR */
+#controls-bar{background:#16213e;height:34px;display:flex;align-items:center;padding:0 10px;gap:10px;border-top:1px solid #2a3a5e;border-bottom:1px solid #2a3a5e;flex-shrink:0}
+#zoom-container{display:flex;align-items:center;gap:5px}
+.vis-btn{background:#0e2a45;color:#c0d4e8;border:1px solid #2a4a6e;width:24px;height:24px;cursor:pointer;border-radius:3px;font-size:14px;display:flex;align-items:center;justify-content:center;line-height:1}
+.vis-btn:hover{background:#1a4060;color:#fff}
+#zoom-slider{width:70px;accent-color:#00c896}
+#overlay-container{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:#6080a0}
+#current-biz-name{color:#ffd700;font-weight:bold}
+
+/* VITAL SIGNS */
+#vital-signs{background:#0a1020;height:34px;display:flex;align-items:center;padding:0 6px;border-top:2px solid #1a3060;flex-shrink:0;overflow:hidden}
+.vital-sign{display:flex;align-items:center;gap:4px;padding:0 9px;border-right:1px solid #1a3060;height:100%;white-space:nowrap}
+.vital-sign:first-child{padding-left:4px}
+.vs-key{color:#5070a0;font-size:11px}
+.vs-val{color:#00e5b5;font-weight:bold;font-size:12px}
+.vs-val.neg{color:#ff6060}
+.vs-val.warn{color:#ffd700}
+
+/* MODALS */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-backdrop.hidden{display:none}
+.modal{background:#0d1e35;border:1px solid #2a4a7e;border-radius:8px;width:92%;max-width:700px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 50px rgba(0,0,0,.85)}
+.modal.wide{max-width:920px}
+.modal.narrow{max-width:460px}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#162840;border-bottom:1px solid #2a4a7e;flex-shrink:0}
+.modal-title{font-size:15px;font-weight:700;color:#00e5b5;display:flex;align-items:center;gap:8px}
+.modal-close{background:none;border:none;color:#5070a0;font-size:20px;cursor:pointer;padding:2px 6px;border-radius:3px;line-height:1}
+.modal-close:hover{background:#2a3a5e;color:#fff}
+.modal-body{padding:14px 16px;overflow-y:auto;flex:1}
+.modal-footer{padding:10px 16px;background:#162840;border-top:1px solid #2a4a7e;display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+
+/* FORM ELEMENTS */
+.form-group{margin-bottom:12px}
+.form-group label{display:block;margin-bottom:4px;color:#8aabcc;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.form-control{width:100%;background:#081420;border:1px solid #2a4a7e;color:#d0e0f0;padding:7px 10px;border-radius:4px;font-size:13px;outline:none;transition:border-color .15s}
+.form-control:focus{border-color:#00c896}
+select.form-control{cursor:pointer}
+.form-control option{background:#081420}
+.btn{padding:7px 14px;border-radius:4px;cursor:pointer;font-size:13px;font-weight:600;border:none;transition:all .15s}
+.btn-primary{background:#00a87c;color:#fff}
+.btn-primary:hover{background:#00c896}
+.btn-secondary{background:#162840;color:#c0d4e8;border:1px solid #2a4a7e}
+.btn-secondary:hover{background:#2a4070}
+.btn-danger{background:#7a1a1a;color:#fff}
+.btn-danger:hover{background:#a02020}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.info-box{background:#081828;border:1px solid #1a4070;border-radius:4px;padding:9px 12px;margin-bottom:10px;font-size:12px;line-height:1.5;color:#8aabcc}
+.info-box.success{border-color:#00a87c;background:#001810;color:#00e5b5}
+.info-box.warning{border-color:#a86000;background:#160c00;color:#ffd700}
+.info-box.error{border-color:#8b1a1a;background:#150000;color:#ff8080}
+
+/* BUSINESS TYPE GRID */
+.business-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}
+.bt{background:#081420;border:2px solid #1a3050;border-radius:6px;padding:8px 4px;cursor:pointer;text-align:center;transition:all .15s}
+.bt:hover{border-color:#00a87c;background:#0a2030}
+.bt.sel{border-color:#ffd700;background:#161000}
+.bt-icon{font-size:22px;display:block;margin-bottom:3px}
+.bt-name{font-size:10px;color:#8aabcc;line-height:1.2}
+.bt-cost{font-size:10px;color:#5070a0;margin-top:2px}
+
+/* LOCATION GRID */
+.loc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}
+.lt{background:#081420;border:2px solid #1a3050;border-radius:6px;padding:8px 5px;cursor:pointer;text-align:center;transition:all .15s;position:relative}
+.lt:hover{border-color:#00a87c}
+.lt.sel{border-color:#ffd700;background:#161000}
+.lt.taken{opacity:.4;cursor:not-allowed;pointer-events:none}
+.lt-zone{font-size:9px;font-weight:700;margin-bottom:2px;text-transform:uppercase}
+.lt-zone.dt{color:#ffd700}.lt-zone.cm{color:#00e5b5}.lt-zone.sb{color:#80d4a0}.lt-zone.in{color:#a0a0a0}.lt-zone.rs{color:#a0b0ff}
+.lt-name{font-size:10px;color:#8aabcc;margin-bottom:2px}
+.lt-rent{font-size:10px;color:#ffd700}
+.lt-traffic{font-size:9px;color:#5070a0}
+
+/* EMPLOYEE CARDS */
+.emp-pool{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.emp-card{background:#081420;border:1px solid #1a3050;border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:10px}
+.emp-card.hired{border-color:#00a87c}
+.emp-info{flex:1}
+.emp-name{font-weight:700;color:#c0d4e8;font-size:12px}
+.emp-role{font-size:10px;color:#5070a0;margin-bottom:3px}
+.emp-wage{font-size:11px;color:#ffd700}
+.emp-q{font-size:10px;color:#8aabcc}
+.q-bar{width:70px;height:5px;background:#0a2040;border-radius:3px;overflow:hidden;margin-top:3px}
+.q-fill{height:100%;border-radius:3px}
+
+/* EQUIPMENT */
+.eq-list{display:flex;flex-direction:column;gap:5px}
+.eq-item{background:#081420;border:1px solid #1a3050;border-radius:5px;padding:8px 12px;display:flex;align-items:center;gap:10px}
+.eq-item.owned{border-color:#00a87c}
+.eq-info{flex:1}
+.eq-name{font-weight:700;color:#c0d4e8;font-size:12px}
+.eq-desc{font-size:10px;color:#5070a0}
+.eq-cost{color:#ffd700;font-weight:700;font-size:12px;min-width:80px;text-align:right}
+
+/* HOURS */
+.hours-table{width:100%;border-collapse:collapse}
+.hours-table td,.hours-table th{padding:5px 8px;font-size:12px;border-bottom:1px solid #1a3050}
+.hours-table th{color:#8aabcc;font-size:11px;text-transform:uppercase}
+.hours-table .day-chk{display:flex;align-items:center;gap:6px}
+
+/* REPORTS */
+.rpt-table{width:100%;border-collapse:collapse;font-size:12px}
+.rpt-table th{text-align:left;padding:5px 9px;color:#8aabcc;border-bottom:1px solid #2a4a7e;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+.rpt-table td{padding:5px 9px;color:#c0d4e8;border-bottom:1px solid #1a3050}
+.rpt-table td.r{text-align:right;font-variant-numeric:tabular-nums}
+.rpt-table td.pos{color:#00e5b5}
+.rpt-table td.neg{color:#ff6060}
+.rpt-table tr.tot td{border-top:1px solid #2a4a7e;font-weight:700;color:#e0f0ff}
+.rpt-table tr.sec td{background:#081828;color:#00c896;font-weight:700;padding:7px 9px}
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.dc{background:#081420;border:1px solid #1a3050;border-radius:6px;padding:12px}
+.dc-lbl{font-size:10px;color:#5070a0;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.dc-val{font-size:20px;font-weight:700;color:#00e5b5}
+.dc-val.neg{color:#ff6060}
+.dc-val.warn{color:#ffd700}
+.dc-sub{font-size:10px;color:#5070a0;margin-top:2px}
+.prog-wrap{background:#0a2040;border-radius:8px;height:8px;overflow:hidden;margin:4px 0}
+.prog-fill{height:100%;border-radius:8px;transition:width .4s}
+
+/* JOURNAL */
+.jl-list{display:flex;flex-direction:column;gap:6px}
+.jl-entry{background:#081420;border-left:3px solid #00c896;padding:6px 10px;border-radius:0 4px 4px 0;font-size:12px}
+.jl-time{color:#5070a0;font-size:10px;margin-bottom:2px}
+.jl-text{color:#c0d4e8}
+.jl-entry.fin{border-left-color:#ffd700}
+.jl-entry.warn{border-left-color:#ff8c00}
+.jl-entry.ok{border-left-color:#00e5b5}
+
+/* MESSAGES */
+.msg-list{display:flex;flex-direction:column;gap:7px}
+.msg-item{background:#081420;border:1px solid #1a3050;border-radius:6px;padding:9px 12px}
+.msg-hdr{display:flex;justify-content:space-between;margin-bottom:4px}
+.msg-from{color:#00e5b5;font-weight:700;font-size:12px}
+.msg-date{color:#5070a0;font-size:10px}
+.msg-body{color:#c0d4e8;font-size:12px;line-height:1.5}
+
+/* SCOREBOARD */
+.sb-table{width:100%;border-collapse:collapse}
+.sb-table th,.sb-table td{padding:7px 11px;text-align:left;border-bottom:1px solid #1a3050;font-size:12px}
+.sb-table th{color:#8aabcc;font-size:11px;text-transform:uppercase}
+.sb-r1 td{color:#ffd700;font-weight:700}
+.sb-r2 td{color:#b0b0b0}
+.sb-r3 td{color:#b07040}
+.sb-me td{background:#0a2040}
+
+/* TOAST */
+#toast{position:fixed;bottom:54px;left:50%;transform:translateX(-50%);background:#0e2040;border:1px solid #00c896;color:#00e5b5;padding:9px 18px;border-radius:6px;font-size:13px;z-index:3000;opacity:0;transition:opacity .3s;pointer-events:none;max-width:420px;text-align:center}
+#toast.show{opacity:1}
+#toast.err{border-color:#ff6060;color:#ff8080}
+#toast.wrn{border-color:#ffd700;color:#ffd700}
+
+/* MISC */
+input[type=range]{accent-color:#00c896;cursor:pointer}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#081020}
+::-webkit-scrollbar-thumb{background:#2a4a7e;border-radius:3px}
+.sep{height:1px;background:#1a3050;margin:10px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+.stat-row label{color:#8aabcc;min-width:110px}
+.stat-bar{flex:1;background:#0a2040;border-radius:4px;height:6px}
+.stat-fill{height:100%;border-radius:4px}
+.stat-val{min-width:35px;text-align:right;color:#00e5b5;font-weight:700}
+.survey-q{display:flex;flex-direction:column;gap:7px}
+.survey-opt{display:flex;align-items:center;gap:8px;background:#081420;padding:8px 10px;border-radius:5px;font-size:12px;cursor:pointer}
+.survey-opt input[type=radio]{accent-color:#00c896}
+</style>
+</head>
+<body>
+
+<div id="sr-message" aria-live="assertive" class="sr-only"></div>
+
+<!-- BRAND HEADER -->
+<div id="brandHeader" role="banner">
+  <h1 class="lessonDisplayName" tabindex="0">DECA VBC: Entrepreneurship Track</h1>
+  <div class="brand-right">
+    <span id="phase-display">Setup Phase</span>
+    <span id="grade-display">Score: 0 / 100</span>
+  </div>
+</div>
+
+<!-- MENU BAR -->
+<div class="header" role="banner">
+<div id="menu-bar">
+  <button id="start-stop-button" class="menu-bar-button" onclick="toggleSim()">
+    <span id="ss-icon">▶</span>
+    <span id="ss-text">Start</span>
+  </button>
+  <button id="run-to-button" class="menu-bar-button" onclick="openModal('modal-runto')">
+    <span>⏭</span><span>Run To</span>
+  </button>
+  <div class="speed-container">
+    <label for="speed-slider">Speed</label>
+    <input type="range" id="speed-slider" min="1" max="10" value="3" oninput="setSpeed(this.value)">
+    <span id="speed-value">3</span>
+  </div>
+  <div id="time-container">
+    <div id="time-value">Day 1 – Mon</div>
+  </div>
+  <div class="menu-container">
+    <!-- FILE MENU -->
+    <div class="dropdown" id="dd-file">
+      <button class="dropdown-toggle" onclick="toggleDD('dd-file')">File ▾</button>
+      <ul class="dropdown-menu">
+        <li><a onclick="saveGame()">💾 Save</a></li>
+        <li><a onclick="openModal('modal-journal')">📋 Actions Journal</a></li>
+        <li><a onclick="openModal('modal-helpbot')">🤖 Help Bot</a></li>
+        <li><a onclick="openModal('modal-scoreboard')">🏆 Competition Scoreboard</a></li>
+        <li class="divider"></li>
+        <li><a onclick="confirmRestart()">🔄 Restart Lesson</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-cash')">💵 Provide Cash</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-about')">ℹ️ About</a></li>
+      </ul>
+    </div>
+    <!-- VIEW MENU -->
+    <div class="dropdown" id="dd-view">
+      <button class="dropdown-toggle" onclick="toggleDD('dd-view')">View ▾</button>
+      <ul class="dropdown-menu">
+        <li><a onclick="setView('town')">🏙️ Town View</a></li>
+        <li><a onclick="setView('interior')">🏪 Business Interior</a></li>
+      </ul>
+    </div>
+    <!-- ACTIONS MENU -->
+    <div class="dropdown" id="dd-actions">
+      <button class="dropdown-toggle" onclick="toggleDD('dd-actions')">Actions ▾</button>
+      <ul class="dropdown-menu">
+        <li><a onclick="openModal('modal-form')">🏢 Form Business</a></li>
+        <li><a onclick="openModal('modal-locate')">📍 Locate Business</a></li>
+        <li><a onclick="openModal('modal-close')">🚪 Close Business</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-finance')">💰 Financing</a></li>
+        <li><a onclick="openModal('modal-team')">👥 Build Your Team</a></li>
+        <li><a onclick="openModal('modal-resources')">🔧 Acquire Resources</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-hours')">🕐 Business Hours</a></li>
+        <li><a onclick="openModal('modal-pricing')">💲 Pricing</a></li>
+        <li><a onclick="openModal('modal-marketing')">📣 Marketing</a></li>
+        <li><a onclick="openModal('modal-operations')">⚙️ Operations</a></li>
+        <li><a onclick="openModal('modal-insurance')">🛡️ Insurance</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-survey-new')">📊 New Survey</a></li>
+        <li><a onclick="openModal('modal-survey-results')">📈 Survey Results</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-transfer')">↗️ Transfer Funds Out</a></li>
+        <li><a onclick="openModal('modal-invest')">📉 Investing</a></li>
+      </ul>
+    </div>
+    <!-- REPORTS MENU -->
+    <div class="dropdown" id="dd-reports">
+      <button class="dropdown-toggle" onclick="toggleDD('dd-reports')">Reports ▾</button>
+      <ul class="dropdown-menu">
+        <li><a onclick="openModal('modal-r-competitors')">🔍 Research Competitors</a></li>
+        <li><a onclick="openModal('modal-r-locations')">🗺️ Research Locations</a></li>
+        <li><a onclick="openModal('modal-r-prices')">💹 Research Prices</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-dashboard')">📊 Dashboard</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-income')">📄 Income Statement</a></li>
+        <li><a onclick="openModal('modal-balance')">📑 Balance Sheet</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-sales')">📈 Sales Report</a></li>
+        <li><a onclick="openModal('modal-backlog')">📦 Backlog Report</a></li>
+        <li class="divider"></li>
+        <li><a onclick="openModal('modal-personal')">👤 Personal Financial Summary</a></li>
+        <li><a onclick="openModal('modal-messages')">✉️ Comments &amp; Messages</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SIM VIEW -->
+<div id="sim-view" role="application">
+  <div id="sim-view-container">
+    <canvas id="sim-view-canvas" width="790" height="480" style="width:790px;height:480px" tabindex="-1" role="application" aria-label="Town simulation view"></canvas>
+  </div>
+  <div id="sim-hint">
+    <div class="hint-title">Welcome to DECA VBC: Entrepreneurship!</div>
+    <div class="hint-sub">Build your business and maximize your net worth</div>
+    <div class="hint-steps">
+      <div class="hint-step">1️⃣ Actions → Form Business</div>
+      <div class="hint-step">2️⃣ Actions → Locate Business</div>
+      <div class="hint-step">3️⃣ Actions → Financing</div>
+      <div class="hint-step">4️⃣ Actions → Build Your Team</div>
+      <div class="hint-step">5️⃣ Actions → Acquire Resources</div>
+      <div class="hint-step">6️⃣ Press ▶ Start to run!</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTROLS BAR -->
+<div id="controls-bar">
+  <div id="zoom-container">
+    <button class="vis-btn" onclick="zoomIn()" title="Zoom in">+</button>
+    <input type="range" id="zoom-slider" min="1" max="3" step=".1" value="1" oninput="setZoom(this.value)">
+    <button class="vis-btn" onclick="zoomOut()" title="Zoom out">−</button>
+  </div>
+  <div id="overlay-container">
+    <span>Current Business:</span>
+    <span id="current-biz-name">—</span>
+  </div>
+</div>
+
+<!-- VITAL SIGNS -->
+<div id="vital-signs" role="region" aria-label="Status Bar">
+  <div class="vital-sign"><span class="vs-key">Cash</span><span class="vs-val" id="vs-cash">$15,000</span></div>
+  <div class="vital-sign"><span class="vs-key">Overall</span><span class="vs-val" id="vs-overall">—</span></div>
+  <div class="vital-sign"><span class="vs-key">Employee Quality</span><span class="vs-val" id="vs-quality">—</span></div>
+  <div class="vital-sign"><span class="vs-key">Wait Rating</span><span class="vs-val" id="vs-wait">—</span></div>
+  <div class="vital-sign"><span class="vs-key">Revenue</span><span class="vs-val" id="vs-revenue">$0</span></div>
+  <div class="vital-sign"><span class="vs-key">Profit</span><span class="vs-val" id="vs-profit">$0</span></div>
+  <div class="vital-sign"><span class="vs-key">Total Profit</span><span class="vs-val" id="vs-totalprofit">$0</span></div>
+  <div class="vital-sign"><span class="vs-key">Net Worth</span><span class="vs-val warn" id="vs-networth">$15,000</span></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- FORM BUSINESS -->
+<div class="modal-backdrop hidden" id="modal-form">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div class="modal-title">🏢 Form Your Business</div>
+      <button class="modal-close" onclick="closeModal('modal-form')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">Choose the type of business you want to start. Each business has different startup costs, revenue potential, and operational requirements.</div>
+      <div class="form-group"><label>Business Type</label>
+        <div class="business-grid" id="bt-grid"></div>
+      </div>
+      <div class="two-col">
+        <div class="form-group"><label>Business Name</label>
+          <input class="form-control" id="biz-name-input" type="text" placeholder="Enter your business name" maxlength="40">
+        </div>
+        <div class="form-group"><label>Legal Structure</label>
+          <select class="form-control" id="biz-legal">
+            <option value="sole">Sole Proprietorship (easiest, full liability)</option>
+            <option value="llc" selected>LLC (limited liability, flexible)</option>
+            <option value="scorp">S-Corporation (tax advantages, more complex)</option>
+            <option value="partner">Partnership (shared ownership)</option>
+          </select>
+        </div>
+      </div>
+      <div id="bt-detail" class="info-box" style="display:none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-form')">Cancel</button>
+      <button class="btn btn-primary" onclick="formBusiness()">Form Business</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOCATE BUSINESS -->
+<div class="modal-backdrop hidden" id="modal-locate">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div class="modal-title">📍 Locate Your Business</div>
+      <button class="modal-close" onclick="closeModal('modal-locate')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">Choose a location for your business. Downtown has the most foot traffic but highest rent. Industrial zones have low rent but less traffic.</div>
+      <div class="loc-grid" id="loc-grid"></div>
+      <div id="loc-detail" class="info-box" style="display:none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-locate')">Cancel</button>
+      <button class="btn btn-primary" onclick="locateBusiness()">Secure Location</button>
+    </div>
+  </div>
+</div>
+
+<!-- FINANCING -->
+<div class="modal-backdrop hidden" id="modal-finance">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💰 Financing</div>
+      <button class="modal-close" onclick="closeModal('modal-finance')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="fin-summary" class="info-box"></div>
+      <div class="two-col">
+        <div class="form-group"><label>Personal Investment ($)</label>
+          <input class="form-control" id="fin-personal" type="number" min="0" step="500" placeholder="Amount from personal savings">
+          <div style="font-size:11px;color:#5070a0;margin-top:3px">Available: <span id="fin-available">$15,000</span></div>
+        </div>
+        <div class="form-group"><label>Bank Loan Amount ($)</label>
+          <input class="form-control" id="fin-loan" type="number" min="0" max="100000" step="1000" placeholder="0">
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="form-group"><label>Loan Interest Rate</label>
+          <select class="form-control" id="fin-rate">
+            <option value="0.05">5% APR (excellent credit)</option>
+            <option value="0.07" selected>7% APR (good credit)</option>
+            <option value="0.09">9% APR (fair credit)</option>
+            <option value="0.12">12% APR (limited credit history)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Loan Term</label>
+          <select class="form-control" id="fin-term">
+            <option value="24">2 years (24 months)</option>
+            <option value="36" selected>3 years (36 months)</option>
+            <option value="60">5 years (60 months)</option>
+          </select>
+        </div>
+      </div>
+      <div id="fin-preview" class="info-box" style="display:none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-finance')">Cancel</button>
+      <button class="btn btn-primary" onclick="applyFinancing()">Apply Financing</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUILD YOUR TEAM -->
+<div class="modal-backdrop hidden" id="modal-team">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div class="modal-title">👥 Build Your Team</div>
+      <button class="modal-close" onclick="closeModal('modal-team')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="team-summary" class="info-box"></div>
+      <div class="form-group"><label>Available Employees</label>
+        <div class="emp-pool" id="emp-pool"></div>
+      </div>
+      <div class="sep"></div>
+      <div class="form-group"><label>Your Team</label>
+        <div id="current-team" class="emp-pool"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-team')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACQUIRE RESOURCES -->
+<div class="modal-backdrop hidden" id="modal-resources">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔧 Acquire Resources</div>
+      <button class="modal-close" onclick="closeModal('modal-resources')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="res-cash" class="info-box"></div>
+      <div class="eq-list" id="eq-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-resources')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUSINESS HOURS -->
+<div class="modal-backdrop hidden" id="modal-hours">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">🕐 Business Hours</div>
+      <button class="modal-close" onclick="closeModal('modal-hours')">✕</button>
+    </div>
+    <div class="modal-body">
+      <table class="hours-table" id="hours-table">
+        <tr><th>Day</th><th>Open?</th><th>Open</th><th>Close</th></tr>
+      </table>
+      <div id="hours-summary" class="info-box" style="margin-top:10px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-hours')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveHours()">Save Hours</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="modal-backdrop hidden" id="modal-pricing">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">💲 Pricing</div>
+      <button class="modal-close" onclick="closeModal('modal-pricing')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="price-info" class="info-box"></div>
+      <div class="form-group">
+        <label>Your Price</label>
+        <input class="form-control" id="price-input" type="number" step="0.25">
+        <div style="font-size:11px;color:#5070a0;margin-top:3px" id="price-range-hint"></div>
+      </div>
+      <div id="price-effect" class="info-box" style="display:none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-pricing')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePricing()">Set Price</button>
+    </div>
+  </div>
+</div>
+
+<!-- MARKETING -->
+<div class="modal-backdrop hidden" id="modal-marketing">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">📣 Marketing</div>
+      <button class="modal-close" onclick="closeModal('modal-marketing')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Monthly Marketing Budget ($)</label>
+        <input class="form-control" id="mkt-budget" type="number" min="0" step="100" value="0">
+      </div>
+      <div class="form-group"><label>Channels</label>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px">
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="mkt-social" checked style="accent-color:#00c896"> Social Media (Instagram, TikTok, Facebook)</label>
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="mkt-online"> Google/Online Ads</label>
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="mkt-local"> Local Flyers &amp; Print</label>
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="mkt-events"> Community Events / Sponsorships</label>
+        </div>
+      </div>
+      <div id="mkt-preview" class="info-box"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-marketing')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMarketing()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- OPERATIONS -->
+<div class="modal-backdrop hidden" id="modal-operations">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">⚙️ Operations</div>
+      <button class="modal-close" onclick="closeModal('modal-operations')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Quality Control Level</label>
+        <select class="form-control" id="ops-quality">
+          <option value="1">Basic (lower costs, lower quality)</option>
+          <option value="2">Standard</option>
+          <option value="3" selected>Good (balanced)</option>
+          <option value="4">High Quality</option>
+          <option value="5">Premium (highest costs, best quality)</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Workflow Efficiency</label>
+        <select class="form-control" id="ops-efficiency">
+          <option value="1">Minimal (disorganized)</option>
+          <option value="2">Basic</option>
+          <option value="3" selected>Organized</option>
+          <option value="4">Streamlined</option>
+          <option value="5">Optimized (lean operations)</option>
+        </select>
+      </div>
+      <div id="ops-preview" class="info-box"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-operations')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveOperations()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSURANCE -->
+<div class="modal-backdrop hidden" id="modal-insurance">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">🛡️ Insurance</div>
+      <button class="modal-close" onclick="closeModal('modal-insurance')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box warning">Insurance protects your business from unexpected losses. Skipping coverage risks large unexpected expenses.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ins-liability" style="accent-color:#00c896"> <span><b>General Liability</b> — $150/mo<br><span style="color:#5070a0">Covers customer injuries, property damage</span></span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ins-property"> <span><b>Property Insurance</b> — $120/mo<br><span style="color:#5070a0">Covers equipment theft or damage</span></span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ins-workers"> <span><b>Workers Compensation</b> — $200/mo<br><span style="color:#5070a0">Required if you have employees</span></span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ins-business"> <span><b>Business Interruption</b> — $80/mo<br><span style="color:#5070a0">Income protection if forced to close</span></span></label>
+      </div>
+      <div id="ins-total" class="info-box" style="margin-top:10px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-insurance')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveInsurance()">Save Coverage</button>
+    </div>
+  </div>
+</div>
+
+<!-- RUN TO -->
+<div class="modal-backdrop hidden" id="modal-runto">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">⏭ Run To</div>
+      <button class="modal-close" onclick="closeModal('modal-runto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">Automatically run the simulation to a specific day.</div>
+      <div class="form-group"><label>Run to Day #</label>
+        <input class="form-control" id="runto-day" type="number" min="1" max="182" placeholder="e.g. 30">
+        <div style="font-size:11px;color:#5070a0;margin-top:3px">Current: Day <span id="runto-current">1</span> / 182</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-runto')">Cancel</button>
+      <button class="btn btn-primary" onclick="runTo()">Run</button>
+    </div>
+  </div>
+</div>
+
+<!-- SURVEY NEW -->
+<div class="modal-backdrop hidden" id="modal-survey-new">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">📊 New Survey</div>
+      <button class="modal-close" onclick="closeModal('modal-survey-new')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">Conduct a customer survey to learn about your market. Costs $250 and takes 3 simulation days.</div>
+      <div class="form-group"><label>Survey Topic</label>
+        <select class="form-control" id="survey-topic">
+          <option value="satisfaction">Customer Satisfaction</option>
+          <option value="pricing">Price Sensitivity</option>
+          <option value="marketing">Marketing Effectiveness</option>
+          <option value="competition">Competitive Position</option>
+          <option value="demand">Demand Forecast</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-survey-new')">Cancel</button>
+      <button class="btn btn-primary" onclick="conductSurvey()">Launch Survey ($250)</button>
+    </div>
+  </div>
+</div>
+
+<!-- SURVEY RESULTS -->
+<div class="modal-backdrop hidden" id="modal-survey-results">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📈 Survey Results</div>
+      <button class="modal-close" onclick="closeModal('modal-survey-results')">✕</button>
+    </div>
+    <div class="modal-body" id="survey-results-body">
+      <div class="info-box">No surveys completed yet. Go to Actions → New Survey to start one.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-survey-results')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSFER FUNDS OUT -->
+<div class="modal-backdrop hidden" id="modal-transfer">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">↗️ Transfer Funds Out</div>
+      <button class="modal-close" onclick="closeModal('modal-transfer')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">Transfer cash from your business account to your personal account. Applies applicable taxes.</div>
+      <div class="form-group"><label>Amount ($)</label>
+        <input class="form-control" id="transfer-amount" type="number" min="0" step="500">
+        <div style="font-size:11px;color:#5070a0;margin-top:3px">Business cash: <span id="transfer-biz-cash">$0</span></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-transfer')">Cancel</button>
+      <button class="btn btn-primary" onclick="transferFunds()">Transfer</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVESTING -->
+<div class="modal-backdrop hidden" id="modal-invest">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">📉 Personal Investing</div>
+      <button class="modal-close" onclick="closeModal('modal-invest')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">Invest your personal savings to grow your net worth. Markets fluctuate!</div>
+      <div class="two-col">
+        <div class="form-group"><label>High-Yield Savings ($)</label>
+          <input class="form-control" id="inv-savings" type="number" min="0" step="100" value="0">
+          <div style="font-size:11px;color:#5070a0;margin-top:3px">~4.5% annual return</div>
+        </div>
+        <div class="form-group"><label>Stock Index Fund ($)</label>
+          <input class="form-control" id="inv-stocks" type="number" min="0" step="100" value="0">
+          <div style="font-size:11px;color:#5070a0;margin-top:3px">Variable return (risk)</div>
+        </div>
+      </div>
+      <div id="inv-summary" class="info-box"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-invest')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveInvesting()">Invest</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSE BUSINESS -->
+<div class="modal-backdrop hidden" id="modal-close">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">🚪 Close Business</div>
+      <button class="modal-close" onclick="closeModal('modal-close')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box error">Warning: Closing your business will liquidate assets and repay outstanding loans. This action cannot be undone!</div>
+      <div id="close-preview" class="info-box"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-close')">Cancel</button>
+      <button class="btn btn-danger" onclick="closeBusiness()">Close Business</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROVIDE CASH (teacher tool) -->
+<div class="modal-backdrop hidden" id="modal-cash">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">💵 Provide Cash (Teacher Tool)</div>
+      <button class="modal-close" onclick="closeModal('modal-cash')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Add Personal Cash ($)</label>
+        <input class="form-control" id="cash-amount" type="number" min="0" step="1000" value="10000">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-cash')">Cancel</button>
+      <button class="btn btn-primary" onclick="provideCash()">Add Cash</button>
+    </div>
+  </div>
+</div>
+
+<!-- HELP BOT -->
+<div class="modal-backdrop hidden" id="modal-helpbot">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🤖 Help Bot</div>
+      <button class="modal-close" onclick="closeModal('modal-helpbot')">✕</button>
+    </div>
+    <div class="modal-body" id="helpbot-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-helpbot')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="modal-backdrop hidden" id="modal-about">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">ℹ️ About</div>
+      <button class="modal-close" onclick="closeModal('modal-about')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">
+        <b>DECA VBC: Entrepreneurship Track</b><br>
+        Local Practice Simulation v1.0<br><br>
+        This is an offline classroom practice version of the DECA Virtual Business Challenge – Entrepreneurship track.<br><br>
+        <b>Scoring:</b> Maximize your net worth over 26 simulated weeks (182 days).<br>
+        Goal (Difficulty 3): $75,000 net worth<br><br>
+        <b>Competition tip:</b> Focus on location, employee quality, pricing strategy, and consistent marketing for best results.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-about')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- JOURNAL -->
+<div class="modal-backdrop hidden" id="modal-journal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📋 Actions Journal</div>
+      <button class="modal-close" onclick="closeModal('modal-journal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="jl-list" id="journal-list"><div class="info-box">No actions recorded yet.</div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-journal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMPETITION SCOREBOARD -->
+<div class="modal-backdrop hidden" id="modal-scoreboard">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🏆 Competition Scoreboard</div>
+      <button class="modal-close" onclick="closeModal('modal-scoreboard')">✕</button>
+    </div>
+    <div class="modal-body" id="scoreboard-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-scoreboard')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESEARCH: COMPETITORS -->
+<div class="modal-backdrop hidden" id="modal-r-competitors">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔍 Research Competitors</div>
+      <button class="modal-close" onclick="closeModal('modal-r-competitors')">✕</button>
+    </div>
+    <div class="modal-body" id="comp-research-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-r-competitors')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESEARCH: LOCATIONS -->
+<div class="modal-backdrop hidden" id="modal-r-locations">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div class="modal-title">🗺️ Research Locations</div>
+      <button class="modal-close" onclick="closeModal('modal-r-locations')">✕</button>
+    </div>
+    <div class="modal-body" id="loc-research-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-r-locations')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESEARCH: PRICES -->
+<div class="modal-backdrop hidden" id="modal-r-prices">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💹 Research Prices</div>
+      <button class="modal-close" onclick="closeModal('modal-r-prices')">✕</button>
+    </div>
+    <div class="modal-body" id="price-research-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-r-prices')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="modal-backdrop hidden" id="modal-dashboard">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div class="modal-title">📊 Dashboard</div>
+      <button class="modal-close" onclick="closeModal('modal-dashboard')">✕</button>
+    </div>
+    <div class="modal-body" id="dashboard-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-dashboard')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- INCOME STATEMENT -->
+<div class="modal-backdrop hidden" id="modal-income">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📄 Income Statement</div>
+      <button class="modal-close" onclick="closeModal('modal-income')">✕</button>
+    </div>
+    <div class="modal-body" id="income-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-income')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- BALANCE SHEET -->
+<div class="modal-backdrop hidden" id="modal-balance">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📑 Balance Sheet</div>
+      <button class="modal-close" onclick="closeModal('modal-balance')">✕</button>
+    </div>
+    <div class="modal-body" id="balance-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-balance')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- SALES REPORT -->
+<div class="modal-backdrop hidden" id="modal-sales">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📈 Sales Report</div>
+      <button class="modal-close" onclick="closeModal('modal-sales')">✕</button>
+    </div>
+    <div class="modal-body" id="sales-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-sales')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- BACKLOG REPORT -->
+<div class="modal-backdrop hidden" id="modal-backlog">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">📦 Backlog Report</div>
+      <button class="modal-close" onclick="closeModal('modal-backlog')">✕</button>
+    </div>
+    <div class="modal-body" id="backlog-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-backlog')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PERSONAL FINANCIAL SUMMARY -->
+<div class="modal-backdrop hidden" id="modal-personal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">👤 Personal Financial Summary</div>
+      <button class="modal-close" onclick="closeModal('modal-personal')">✕</button>
+    </div>
+    <div class="modal-body" id="personal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-personal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMMENTS & MESSAGES -->
+<div class="modal-backdrop hidden" id="modal-messages">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✉️ Comments &amp; Messages</div>
+      <button class="modal-close" onclick="closeModal('modal-messages')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="msg-list" id="msg-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-messages')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="sim.js"></script>
+</body>
+</html>
